@@ -46,52 +46,45 @@ function App() {
   return (
     <Web3ReactManager>
       <s.Screen>
-        {/* <s.Container ai="center">
-          <div
-            style={{
-              border: "1px solid var(--secondary)",
-              marginBottom: 30,
-              width: "92%",
-            }}
-          />
-        </s.Container> */}
-        {!active ?
-          <Connection />
-          : (isDomainDataFetching || !isDomainDataFetched) ? (
-            <s.LoaderWrapper>
-              <Loader size="2.8rem" />
-            </s.LoaderWrapper>
-            ) : !isAppConfigured ? (
-              <Manage />
-            ) : (
-              <>
-                <Navigation />
-                <s.Container ai="center">
-                  <s.Container w="85%" style={{ minHeight: 600 }}>
+        {/* This section was previously forcing wallet connection */}
+        {!active && (
+          <div>
+            <p>Wallet not connected. You can navigate through the app, but please connect your wallet when you're ready to interact with the blockchain features.</p>
+            <button onClick={() => window.location.reload()}>Refresh to connect wallet</button>
+          </div>
+        )}
 
-                    <Outlet />
-                    <Routes>
-                      <Route path="/" element={<Launchpad />} />
-                      <Route path="/launchpad" element={<Launchpad />} />
-                      <Route
-                        path="/home"
-                        element={<Home />}
-                      />
-                      <Route path="/manage" element={<Manage />} />
-                      <Route path="/launchpad/:idoAddress" element={<LaunchpadInfo />} />
-                      <Route path="/publish" element={<Publish />} />
-                      <Route path="/lock" element={<LockToken />} />
-                      <Route path="/account" element={<Account />} />
-                      { isLockerEnabled && <Route path="/locker" element={<Locker />} /> }
-                      { isLockerEnabled && <Route path="/locker/:lockerAddress" element={<LockerInfo /> } /> }
-                    </Routes>
-                    <s.SpacerLarge />
-                  </s.Container>
-                  <Footer />
-                </s.Container>
-              </>
-            )
-        }
+        {/* Allow navigation without forcing wallet connection */}
+        <Navigation />
+        <s.Container ai="center">
+          <s.Container w="85%" style={{ minHeight: 600 }}>
+            {/* Load routes */}
+            <Outlet />
+            <Routes>
+              <Route path="/" element={<Launchpad />} />
+              <Route path="/launchpad" element={<Launchpad />} />
+              <Route path="/home" element={<Home />} />
+              <Route path="/manage" element={<Manage />} />
+              <Route path="/launchpad/:idoAddress" element={<LaunchpadInfo />} />
+              <Route path="/publish" element={<Publish />} />
+              <Route path="/lock" element={<LockToken />} />
+              <Route path="/account" element={<Account />} />
+              {isLockerEnabled && <Route path="/locker" element={<Locker />} />}
+              {isLockerEnabled && <Route path="/locker/:lockerAddress" element={<LockerInfo />} />}
+            </Routes>
+            <s.SpacerLarge />
+          </s.Container>
+          <Footer />
+        </s.Container>
+
+        {/* Loader and Manage pages based on app configuration */}
+        {isDomainDataFetching || !isDomainDataFetched ? (
+          <s.LoaderWrapper>
+            <Loader size="2.8rem" />
+          </s.LoaderWrapper>
+        ) : !isAppConfigured ? (
+          <Manage />
+        ) : null}
       </s.Screen>
     </Web3ReactManager>
   );
