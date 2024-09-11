@@ -27,9 +27,10 @@ export default function Web3ReactManager({ children }) {
 
   // after eagerly trying injected, if the network connect ever isn't active or in an error state, activate it
   useEffect(() => {
-    if (triedEager && !networkActive && !networkError && !active) {
-      activateNetwork(network)
-    }
+    // Prevent automatic wallet connection on load
+    // if (triedEager && !networkActive && !networkError && !active) {
+    //   activateNetwork(network)
+    // }
   }, [triedEager, networkActive, networkError, activateNetwork, active])
 
   // when there's no account connected, react to logins (broadly speaking) on the injected provider, if it exists
