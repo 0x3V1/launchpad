@@ -19,24 +19,29 @@ const Message = styled.h2`
 `
 
 export default function Web3ReactManager({ children }) {
-  const { active } = useWeb3React()
+  const { active, activate } = useWeb3React()
   const { active: networkActive, error: networkError, activate: activateNetwork } = useWeb3React(NetworkContextName)
+
+  const [walletConnected, setWalletConnected] = useState(false)
 
   // try to eagerly connect to an injected provider, if it exists and has granted access already
   const triedEager = useEagerConnect()
 
   // after eagerly trying injected, if the network connect ever isn't active or in an error state, activate it
   useEffect(() => {
-    // Prevent automatic wallet connection on load
+    // Commented out automatic connection
     // if (triedEager && !networkActive && !networkError && !active) {
     //   activateNetwork(network)
     // }
   }, [triedEager, networkActive, networkError, activateNetwork, active])
 
-  // when there's no account connected, react to logins (broadly speaking) on the injected provider, if it exists
+  const handleConnectWallet = () => {
+    activateNetwork(network)
+    setWalletConnected(true)
+  }
+
   useInactiveListener(!triedEager)
 
-  // handle delayed loader state
   const [showLoader, setShowLoader] = useState(false)
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -48,12 +53,10 @@ export default function Web3ReactManager({ children }) {
     }
   }, [])
 
-  // on page load, do nothing until we've tried to connect to the injected connector
   if (!triedEager) {
     return null
   }
 
-  // if the account context isn't active, and there's an error on the network context, it's an irrecoverable error
   if (!active && networkError) {
     return (
       <MessageWrapper>
@@ -62,13 +65,14 @@ export default function Web3ReactManager({ children }) {
     )
   }
 
-  // if neither context is active, spin
-  if (!active && !networkActive) {
-    return showLoader ? (
+  if (!active && !networkActive && !walletConnected) {
+    return (
       <MessageWrapper>
-        <Loader />
+        <div>
+          <button onClick={handleConnectWallet}>Connect Wallet</button>
+        </div>
       </MessageWrapper>
-    ) : null
+    )
   }
 
   return <>{children}</>
